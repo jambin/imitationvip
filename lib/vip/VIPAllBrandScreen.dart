@@ -119,7 +119,6 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
 //    print("---------2---" + detail.globalPosition.toString());
 //    print("---------item---" + item.toString());
 
-    _isLoadPic = false;
     _controller.forward();
 
   }
@@ -168,6 +167,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         }
         number++;
       });
+      _isLoadPic = false;
       _scontrollerListView.animateTo(dy, duration: new Duration(milliseconds: 500), curve: Curves.ease).whenComplete((){
         _isLoadPic = true;
       });
