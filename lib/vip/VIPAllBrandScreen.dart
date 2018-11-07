@@ -18,6 +18,7 @@ class VIPAllBrandScreen extends StatefulWidget{
 }
 
 class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProviderStateMixin{
+  GlobalKey listViewKey = new GlobalKey();
   bool _isShowLetter = false;
   String _selLetter = "";
   int _selLetterIndex = 0;
@@ -32,6 +33,8 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
   Map allBrand;
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  bool _isLoadPic = true;
 
   @override
   void initState() {
@@ -67,6 +70,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         child: new Stack(
           children: <Widget>[
             new ListView(
+              key: listViewKey,
               controller: _scontrollerListView,
               children: _makeBrand(),
             ),//
@@ -102,19 +106,20 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
   }
 
   void _onPanDown(DragDownDetails detail){
-    print("------title bar height" + MediaQuery.of(context).padding.top.toString());
-    print("------screen size" + MediaQuery.of(context).size.toString());
-    print("------appbar size" + _appBar.preferredSize.toString());
+//    print("------title bar height" + MediaQuery.of(context).padding.top.toString());
+//    print("------screen size" + MediaQuery.of(context).size.toString());
+//    print("------appbar size" + _appBar.preferredSize.toString());
 
     double screenHeight = MediaQuery.of(context).size.height;
     double letterHeight = screenHeight - 25 - 56.0 - 24.0 - 20;
     _itemHeight = letterHeight / 27;
     double item = (detail.globalPosition.dy - 25 - 56.0 - 24.0)/(letterHeight/27);
 
-    print("------------letterHeight : " + letterHeight.toString());
-    print("---------2---" + detail.globalPosition.toString());
-    print("---------item---" + item.toString());
+//    print("------------letterHeight : " + letterHeight.toString());
+//    print("---------2---" + detail.globalPosition.toString());
+//    print("---------item---" + item.toString());
 
+    _isLoadPic = false;
     _controller.forward();
 
   }
@@ -140,6 +145,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         _controller.reset();
       });
     });
+
     _jump2Letter();
   }
 
@@ -157,12 +163,14 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         }
         if(count){
           List listBrands = value;
-          print("------->" + listBrands.length.toString());
+//          print("------->" + listBrands.length.toString());
           dy +=  listBrands.length * 102 + 25;
         }
         number++;
       });
-      _scontrollerListView.animateTo(dy, duration: new Duration(milliseconds: 500), curve: Curves.ease);
+      _scontrollerListView.animateTo(dy, duration: new Duration(milliseconds: 500), curve: Curves.ease).whenComplete((){
+        _isLoadPic = true;
+      });
     }while(1 == 0);
   }
 
@@ -188,7 +196,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
           if(null == pic || 0 == "".compareTo(pic)){
             pic = null;
           }
-          print("---------->${item['sn']} ---> $pic");
+//          print("---------->${item['sn']} ---> $pic");
           listWidget.add(_makeItem(isTitle, key.toString() + strSize, name, pic));
           isTitle = false;
         });
@@ -211,7 +219,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
           color: Colors.white, alignment: Alignment.centerLeft,
           child: new Row(
             children: <Widget>[
-              null == pic?
+              null == pic || !_isLoadPic?
               new Image.asset("imgs/vips/new_ailise.png", width: 80.0, height: 80.0,):
 //              new Image.network(pic,width: 80.0, height: 80.0,),
               new CachedNetworkImage(imageUrl: pic, width: 80.0, height: 80.0,),
@@ -234,7 +242,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
 
     SharedPreferences sp = await _prefs;
     String strBrands = sp.getString("AllBrands");
-    print("------------>${strBrands}");
+//    print("------------>${strBrands}");
     if(null != strBrands && 0 > "".compareTo(strBrands)){
       allBrand = json.decode(strBrands);
       return allBrand;
@@ -255,7 +263,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
 //          print("--------------" + item.toString());
 //        });
 //      });
-      print("--------------load brand end" + allBrand.length.toString());
+//      print("--------------load brand end" + allBrand.length.toString());
       this.setState((){});
       return allBrand;
     },onError: (){
