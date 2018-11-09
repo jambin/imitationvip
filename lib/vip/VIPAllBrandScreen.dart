@@ -6,6 +6,8 @@ import '../config/TestData.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../views/LetterNavWidget.dart';
+
 
 class VIPAllBrandScreen extends StatefulWidget{
 
@@ -76,21 +78,9 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
             ),//
 
             new Positioned(
-              width: 25.0,
+              width: 35.0,
               right: 10.0,top: 25.0,bottom: 20.0,
-              child: new GestureDetector(
-                  onVerticalDragDown: _onPanDown,
-                  onVerticalDragUpdate: _onPanUpdate,
-                  onVerticalDragEnd: _onPandDragEnd,
-                  child: new Container(color: Colors.grey,
-                    child: new Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: _makeLetter(),
-                    ),//
-                  ),//
-              ),//
+              child: new LetterNavWidget(changeLetter: changeLetter,),//
             ),//
 
             new Center(
@@ -103,6 +93,34 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         ),
       ),
     );
+  }
+
+  void changeLetter({int index, String letter, int status}){
+    print("------->$index $letter $status");
+    if(0 == status){
+      _isLoadPic = false;
+      _controller.forward();
+      return;
+    }
+    if(1 == status){
+      this.setState((){
+        _isShowLetter = true;
+        _selLetter = letter;
+        _selLetterIndex = index;
+      });
+      return;
+    }
+    if(-1 == status){
+      new Timer(new Duration(seconds: 1), (){
+        this.setState((){
+          _isShowLetter = false;
+          _controller.reset();
+        });
+      });
+      _jump2Letter();
+      return;
+    }
+
   }
 
   void _onPanDown(DragDownDetails detail){
@@ -207,36 +225,6 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
 
   Widget _makeItem(bool isTitle, String letter, String name, String pic){
       return new ColumnEx(name: name, isTitle: isTitle, pic: pic, letter: letter, isLoadPic: _isLoadPic,);
-//    return new Column(
-//      children: <Widget>[
-//        isTitle ?new Container(
-//          padding: new EdgeInsets.only(left: 20.0),
-//          color: new Color(0xFFE8E8E8),
-//          height: 25.0, alignment: Alignment.centerLeft,
-//          child: new Text(letter),
-//        ):new Container(),//
-//        new Container(
-//          padding: new EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-//          color: Colors.white, alignment: Alignment.centerLeft,
-//          child: new Row(
-//            children: <Widget>[
-//              null == pic || !_isLoadPic?
-//              new Image.asset("imgs/vips/new_ailise.png", width: 80.0, height: 80.0,):
-////              new Image.network(pic,width: 80.0, height: 80.0,),
-//              new CachedNetworkImage(imageUrl: pic, width: 80.0, height: 80.0,),
-//              new Padding(padding: new EdgeInsets.only(left: 20.0), child: new Text(name),),
-//            ],
-//          ),//
-//        ),//
-//        new Padding(padding: new EdgeInsets.only(left: 20.0),child: new Container(height: 2.0, color: new Color(0xFFE8E8E8),),),
-//      ],
-//    );
-  }
-
-  List<Widget> _makeLetter(){
-    return listLetter.map((letter){
-      return new Center(child: new Text(letter, style: const TextStyle(color: Colors.black, fontSize: 16.0),),);
-    }).toList();
   }
 
   Future<Map> _loadBrand() async{
@@ -292,12 +280,12 @@ class _ColumnEx extends State<ColumnEx> {
   @override
   Widget build(BuildContext context) {
     Widget logo = null;
-    if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
+//    if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
       logo = new Container(width: 80.0, height: 80.0,);
-    }else{
-      print("--------->load-->${widget.name}  $_isCanLoad");
-      logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
-    }
+//    }else{
+//      print("--------->load-->${widget.name}  $_isCanLoad");
+//      logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
+//    }
 
     return new Column(
       children: <Widget>[
