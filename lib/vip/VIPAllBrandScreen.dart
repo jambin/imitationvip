@@ -118,7 +118,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
 //    print("------------letterHeight : " + letterHeight.toString());
 //    print("---------2---" + detail.globalPosition.toString());
 //    print("---------item---" + item.toString());
-
+    _isLoadPic = false;
     _controller.forward();
 
   }
@@ -167,7 +167,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         }
         number++;
       });
-      _isLoadPic = false;
+
       _scontrollerListView.animateTo(dy, duration: new Duration(milliseconds: 500), curve: Curves.ease).whenComplete((){
         _isLoadPic = true;
       });
@@ -206,30 +206,31 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
   }
 
   Widget _makeItem(bool isTitle, String letter, String name, String pic){
-    return new Column(
-      children: <Widget>[
-        isTitle ?new Container(
-          padding: new EdgeInsets.only(left: 20.0),
-          color: new Color(0xFFE8E8E8),
-          height: 25.0, alignment: Alignment.centerLeft,
-          child: new Text(letter),
-        ):new Container(),//
-        new Container(
-          padding: new EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
-          color: Colors.white, alignment: Alignment.centerLeft,
-          child: new Row(
-            children: <Widget>[
-              null == pic || !_isLoadPic?
-              new Image.asset("imgs/vips/new_ailise.png", width: 80.0, height: 80.0,):
-//              new Image.network(pic,width: 80.0, height: 80.0,),
-              new CachedNetworkImage(imageUrl: pic, width: 80.0, height: 80.0,),
-              new Padding(padding: new EdgeInsets.only(left: 20.0), child: new Text(name),),
-            ],
-          ),//
-        ),//
-        new Padding(padding: new EdgeInsets.only(left: 20.0),child: new Container(height: 2.0, color: new Color(0xFFE8E8E8),),),
-      ],
-    );
+      return new ColumnEx(name: name, isTitle: isTitle, pic: pic, letter: letter, isLoadPic: _isLoadPic,);
+//    return new Column(
+//      children: <Widget>[
+//        isTitle ?new Container(
+//          padding: new EdgeInsets.only(left: 20.0),
+//          color: new Color(0xFFE8E8E8),
+//          height: 25.0, alignment: Alignment.centerLeft,
+//          child: new Text(letter),
+//        ):new Container(),//
+//        new Container(
+//          padding: new EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
+//          color: Colors.white, alignment: Alignment.centerLeft,
+//          child: new Row(
+//            children: <Widget>[
+//              null == pic || !_isLoadPic?
+//              new Image.asset("imgs/vips/new_ailise.png", width: 80.0, height: 80.0,):
+////              new Image.network(pic,width: 80.0, height: 80.0,),
+//              new CachedNetworkImage(imageUrl: pic, width: 80.0, height: 80.0,),
+//              new Padding(padding: new EdgeInsets.only(left: 20.0), child: new Text(name),),
+//            ],
+//          ),//
+//        ),//
+//        new Padding(padding: new EdgeInsets.only(left: 20.0),child: new Container(height: 2.0, color: new Color(0xFFE8E8E8),),),
+//      ],
+//    );
   }
 
   List<Widget> _makeLetter(){
@@ -272,4 +273,78 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
     return allBrand;
   }
 
+}
+
+class ColumnEx extends StatefulWidget {
+  bool isTitle;
+  String letter = "";
+  String pic;
+  bool isLoadPic;
+  String name;
+  ColumnEx({Key key, this.name:"", this.letter:"", this.isTitle:false, this.isLoadPic:false, this.pic:null}):super(key:key);
+
+  @override
+  _ColumnEx createState() => new _ColumnEx();
+}
+
+class _ColumnEx extends State<ColumnEx> {
+  bool _isCanLoad = false;
+  @override
+  Widget build(BuildContext context) {
+    Widget logo = null;
+    if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
+      logo = new Container(width: 80.0, height: 80.0,);
+    }else{
+      print("--------->load-->${widget.name}  $_isCanLoad");
+      logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
+    }
+
+    return new Column(
+      children: <Widget>[
+        widget.isTitle ?new Container(
+          padding: new EdgeInsets.only(left: 20.0),
+          color: new Color(0xFFE8E8E8),
+          height: 25.0, alignment: Alignment.centerLeft,
+          child: new Text(widget.letter),
+        ):new Container(),//
+        new Container(
+          padding: new EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
+          color: Colors.white, alignment: Alignment.centerLeft,
+          child: new Row(
+            children: <Widget>[
+              logo,
+              new Padding(padding: new EdgeInsets.only(left: 20.0), child: new Text(widget.name),),
+            ],
+          ),//
+        ),//
+        new Padding(padding: new EdgeInsets.only(left: 20.0),child: new Container(height: 2.0, color: new Color(0xFFE8E8E8),),),
+      ],
+    );
+  }
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _isCanLoad = true;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _isCanLoad = false;
+    super.dispose();
+  }
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    _isCanLoad = false;
+    super.deactivate();
+  }
+
+  @override
+  void reassemble() {
+    // TODO: implement reassemble
+    super.reassemble();
+  }
 }
