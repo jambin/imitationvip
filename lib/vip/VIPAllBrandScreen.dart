@@ -111,6 +111,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
       return;
     }
     if(-1 == status){
+
       new Timer(new Duration(seconds: 1), (){
         this.setState((){
           _isShowLetter = false;
@@ -121,49 +122,6 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
       return;
     }
 
-  }
-
-  void _onPanDown(DragDownDetails detail){
-//    print("------title bar height" + MediaQuery.of(context).padding.top.toString());
-//    print("------screen size" + MediaQuery.of(context).size.toString());
-//    print("------appbar size" + _appBar.preferredSize.toString());
-
-    double screenHeight = MediaQuery.of(context).size.height;
-    double letterHeight = screenHeight - 25 - 56.0 - 24.0 - 20;
-    _itemHeight = letterHeight / 27;
-    double item = (detail.globalPosition.dy - 25 - 56.0 - 24.0)/(letterHeight/27);
-
-//    print("------------letterHeight : " + letterHeight.toString());
-//    print("---------2---" + detail.globalPosition.toString());
-//    print("---------item---" + item.toString());
-    _isLoadPic = false;
-    _controller.forward();
-
-  }
-
-  void _onPanUpdate(DragUpdateDetails detail){
-//    print("------------" + detail.globalPosition.toString());
-    double index1 = (detail.globalPosition.dy - 25 - 56.0 - 24.0)/_itemHeight;
-    int index = index1.round();
-    if(0 <= index && index < 27){
-      this.setState((){
-        _isShowLetter = true;
-        _selLetter = listLetter[index];
-        _selLetterIndex = index;
-      });
-    }
-  }
-
-  void _onPandDragEnd(DragEndDetails detail){
-
-    new Timer(new Duration(seconds: 1), (){
-      this.setState((){
-        _isShowLetter = false;
-        _controller.reset();
-      });
-    });
-
-    _jump2Letter();
   }
 
   void _jump2Letter(){
