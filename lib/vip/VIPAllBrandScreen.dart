@@ -280,12 +280,12 @@ class _ColumnEx extends State<ColumnEx> {
   @override
   Widget build(BuildContext context) {
     Widget logo = null;
-//    if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
+    if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
       logo = new Container(width: 80.0, height: 80.0,);
-//    }else{
-//      print("--------->load-->${widget.name}  $_isCanLoad");
-//      logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
-//    }
+    }else{
+      print("--------->load-->${widget.name}  $_isCanLoad");
+      logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
+    }
 
     return new Column(
       children: <Widget>[
