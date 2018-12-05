@@ -65,17 +65,24 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
       titleSpacing: 0.0,centerTitle: true,
       title: new Text("在售品牌", style: const TextStyle(color: Colors.black, fontSize: 18.0),),
     );
+//    _getAllBrandSize();
+
     return new Scaffold(
       backgroundColor: Colors.white,
       appBar: _appBar,
       body: new Container(
         child: new Stack(
           children: <Widget>[
-            new ListView(
-              key: listViewKey,
-              controller: _scontrollerListView,
-              children: _makeBrand(),
-            ),//
+            new ListView.builder(
+                itemCount: _getAllBrandSize(),
+                itemBuilder: _makeBrandItem,
+                controller: _scontrollerListView,
+            ),
+//            new ListView(
+//              key: listViewKey,
+//              controller: _scontrollerListView,
+//              children: _makeBrand(),
+//            ),//
 
             new Positioned(
               width: 35.0,
@@ -133,7 +140,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         break;
       }
       allBrand.forEach((key, value){
-        if(_selLetterIndex == number){
+        if(_selLetterIndex + 1 == number){
           count = false;
         }
         if(count){
@@ -144,6 +151,7 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
         number++;
       });
 
+      print("------jump to->" + dy.toString());
       _scontrollerListView.animateTo(dy, duration: new Duration(milliseconds: 500), curve: Curves.ease).whenComplete((){
         _isLoadPic = true;
       });
@@ -179,6 +187,56 @@ class _VIPAllBrandScreenState extends State<VIPAllBrandScreen> with TickerProvid
       });//for
     }
     return listWidget;
+  }
+  int _getAllBrandSize(){
+    int total = 0;
+    if(null == allBrand) return 0;
+
+    allBrand.forEach((key, list){
+      total += list.length;
+      return list;
+    });
+    return total;
+  }
+  Widget _makeBrandItem(BuildContext context, int index){
+    Map itemData = _getBrandItemByIndex(index);
+
+    String key = itemData['key'];
+    int strSize = itemData['size'];
+    Map item = itemData['value'];
+    bool isTitle = itemData['isTitle'];
+    String name = item['name'].toString();
+
+
+    if(0 == "".compareTo(name)){
+      name = item['name_eng'].toString();
+    }
+//    print("-----------" + item['logo'].toString());
+    String pic = item['logo'].toString();
+    if(null == pic || 0 == "".compareTo(pic)){
+      pic = null;
+    }
+    return _makeItem(isTitle, key + strSize.toString(), name, pic);
+  }
+
+  Map _getBrandItemByIndex(int itemIndex){
+    int sumSize = -1;
+    Iterable keys = allBrand.keys;
+    int size = keys.length;
+
+    for(int index = 0; index < size; index++){
+      String key = keys.elementAt(index);
+      int len = allBrand[key].length;
+      sumSize += len;
+      if(sumSize < itemIndex){
+        continue;
+      }
+      int i = len + itemIndex- sumSize - 1;
+
+      bool isTitle = i == 0?true:false;
+      return {"key":key,"value":allBrand[key][i], "isTitle":isTitle, "size":len};
+    }
+    return null;
   }
 
   Widget _makeItem(bool isTitle, String letter, String name, String pic){
@@ -241,7 +299,6 @@ class _ColumnEx extends State<ColumnEx> {
     if(null == widget.pic || !widget.isLoadPic || !_isCanLoad){
       logo = new Container(width: 80.0, height: 80.0,);
     }else{
-      print("--------->load-->${widget.name}  $_isCanLoad");
       logo = new CachedNetworkImage(imageUrl: widget.pic, width: 80.0, height: 80.0,);
     }
 
